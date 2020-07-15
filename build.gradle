@@ -1,0 +1,64 @@
+group 'SeleniumGridTraining'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testRuntime
+    }
+}
+
+dependencies {
+    // Selenium
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59'
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-remote-driver', version: '3.141.59'
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-chrome-driver', version: '3.141.59'
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-firefox-driver', version: '3.141.59'
+
+    // TestNG
+    testCompile group: 'org.testng', name: 'testng', version: '6.14.3'
+
+    // Cucumber
+    compile group: 'io.cucumber', name: 'cucumber-java', version: '4.8.0'
+    compile group: 'io.cucumber', name: 'cucumber-testng', version: '4.8.0'
+
+    // LOG
+    compile group: 'log4j', name: 'log4j', version: '1.2.17'
+
+    // cucumber-reporting
+    compile group: 'net.masterthought', name: 'cucumber-reporting', version: '5.3.0'
+
+}
+
+task testNGTest(type: Test) {
+    systemProperty 'browser', System.getProperties().getOrDefault('browser', 'chrome')
+    systemProperty 'headless', System.getProperties().getOrDefault('headless', 'false')
+
+    useTestNG() {
+        useDefaultListeners = true
+        suites 'src/test/resources/testng.xml'
+    }
+}
+
+task cucumberTest() {
+    dependsOn assemble, compileTestJava
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = ['--plugin', 'pretty',
+                    '--plugin', 'html:target/cucumber-html-report',
+                    '--plugin', 'json:target/cucumber.json',
+                    '--glue', 'com/selenium/steps', 'src/test/resources/features',
+                    '--tags', 'not @Ignore',
+                    '--tags', 'not @ignore']
+        }
+    }
+}
