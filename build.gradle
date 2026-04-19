@@ -1,9 +1,12 @@
-group 'SeleniumGridTraining'
-version '1.0-SNAPSHOT'
+group = 'SeleniumTraining'
+version = '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
-sourceCompatibility = 1.8
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
 
 repositories {
     mavenCentral()
@@ -11,33 +14,34 @@ repositories {
 
 configurations {
     cucumberRuntime {
-        extendsFrom testRuntime
+        extendsFrom testRuntimeClasspath
     }
 }
 
 dependencies {
-    // Selenium
-    compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59'
-    compile group: 'org.seleniumhq.selenium', name: 'selenium-remote-driver', version: '3.141.59'
-    compile group: 'org.seleniumhq.selenium', name: 'selenium-chrome-driver', version: '3.141.59'
-    compile group: 'org.seleniumhq.selenium', name: 'selenium-firefox-driver', version: '3.141.59'
+    // Selenium - Updated to 4.x
+    implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
+    
+    // WebDriverManager - For automatic driver management
+    implementation 'io.github.bonigarcia:webdrivermanager:5.6.3'
 
-    // TestNG
-    testCompile group: 'org.testng', name: 'testng', version: '6.14.3'
+    // TestNG - Updated
+    testImplementation 'org.testng:testng:7.8.0'
 
-    // Cucumber
-    compile group: 'io.cucumber', name: 'cucumber-java', version: '4.8.0'
-    compile group: 'io.cucumber', name: 'cucumber-testng', version: '4.8.0'
+    // Cucumber - Updated to 7.x
+    implementation 'io.cucumber:cucumber-java:7.14.0'
+    implementation 'io.cucumber:cucumber-testng:7.14.0'
 
-    // LOG
-    compile group: 'log4j', name: 'log4j', version: '1.2.17'
+    // SLF4J and Logback - Modern logging replacement for log4j
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
 
     // cucumber-reporting
-    compile group: 'net.masterthought', name: 'cucumber-reporting', version: '5.3.0'
+    implementation 'net.masterthought:cucumber-reporting:5.11.0'
 
 }
 
-task testNGTest(type: Test) {
+test {
     systemProperty 'browser', System.getProperties().getOrDefault('browser', 'chrome')
     systemProperty 'headless', System.getProperties().getOrDefault('headless', 'false')
 
@@ -47,18 +51,14 @@ task testNGTest(type: Test) {
     }
 }
 
-task cucumberTest() {
+task cucumberTest(type: JavaExec) {
     dependsOn assemble, compileTestJava
-    doLast {
-        javaexec {
-            main = "io.cucumber.core.cli.Main"
-            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
-            args = ['--plugin', 'pretty',
-                    '--plugin', 'html:target/cucumber-html-report',
-                    '--plugin', 'json:target/cucumber.json',
-                    '--glue', 'com/selenium/steps', 'src/test/resources/features',
-                    '--tags', 'not @Ignore',
-                    '--tags', 'not @ignore']
-        }
-    }
+    mainClass = "io.cucumber.core.cli.Main"
+    classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+    args = ['--plugin', 'pretty',
+            '--plugin', 'html:target/cucumber-html-report',
+            '--plugin', 'json:target/cucumber.json',
+            '--glue', 'com/selenium/steps', 'src/test/resources/features',
+            '--tags', 'not @Ignore',
+            '--tags', 'not @ignore']
 }

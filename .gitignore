@@ -1,13 +1,30 @@
+# IDE
 .idea/
-.gradle/
+.vscode/
+*.iml
 
+# Gradle
+.gradle/
 /build/
 
+# Maven-style output
 /out/
 /output/
 /target/
 /reports/
 
-*.iml
+# Logs
+logs/
+*.log
+
+# OS
 *.DS_Store
+
+# Sensitive config - do not commit credentials
+src/test/resources/config/config.properties
+
+# Selenium drivers (managed by WebDriverManager at runtime)
+src/test/resources/selenium/
+
+# Windows scripts (not needed on cross-platform repo)
 *.bat

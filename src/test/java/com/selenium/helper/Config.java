@@ -1,46 +1,65 @@
 package com.selenium.helper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileInputStream;
 import java.util.Properties;
 
 public class Config {
 
-	private static Config instance = null;
-	private static Properties prop = null;
+    private static final Logger logger = LoggerFactory.getLogger(Config.class);
+    private static Config instance = null;
+    private static Properties prop = null;
 
-	private Config() {
-		prop = new Properties();
-		load_properties();
-	}
+    private Config() {
+        prop = new Properties();
+        loadProperties();
+    }
 
-	private void load_properties() {
-		String file_path = Project.ROOT + "/src/test/resources/config/config.properties";
-		try {
-			prop.load(new FileInputStream(file_path));
-		} catch (Exception e) {
-			System.out.println("Exception: " + e);
-		}
-	}
+    private void loadProperties() {
+        String filePath = Project.ROOT + "/src/test/resources/config/config.properties";
+        try {
+            prop.load(new FileInputStream(filePath));
+            logger.info("Configuration file loaded successfully from: " + filePath);
+        } catch (Exception e) {
+            logger.error("Failed to load configuration file from: " + filePath, e);
+            throw new RuntimeException("Failed to load configuration file", e);
+        }
+    }
 
-	// static method to create instance of Singleton class
-	public static Config getInstance() {
-		if (instance == null)
-			instance = new Config();
+    // static method to create instance of Singleton class (thread-safe)
+    public static synchronized Config getInstance() {
+        if (instance == null)
+            instance = new Config();
+        return instance;
+    }
 
-		return instance;
-	}
+    public String url() {
+        String value = prop.getProperty("url");
+        if (value == null || value.isEmpty()) {
+            logger.error("Property 'url' not found in configuration");
+            throw new IllegalArgumentException("Property 'url' not configured");
+        }
+        return value;
+    }
 
-	public String url() {
-		return prop.getProperty("url");
-	}
+    public String user() {
+        String value = prop.getProperty("user");
+        if (value == null || value.isEmpty()) {
+            logger.error("Property 'user' not found in configuration");
+            throw new IllegalArgumentException("Property 'user' not configured");
+        }
+        return value;
+    }
 
-	public String user() {
-		return prop.getProperty("user");
-	}
-
-	public String password() {
-		return prop.getProperty("password");
-
-	}
+    public String password() {
+        String value = prop.getProperty("password");
+        if (value == null || value.isEmpty()) {
+            logger.error("Property 'password' not found in configuration");
+            throw new IllegalArgumentException("Property 'password' not configured");
+        }
+        return value;
+    }
 
 }

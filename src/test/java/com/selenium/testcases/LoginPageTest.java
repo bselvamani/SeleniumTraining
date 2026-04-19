@@ -11,24 +11,32 @@ public class LoginPageTest extends BaseTest {
 
     @Test
     public void test_myAccountPage() {
-
+        logger.info("Starting test_myAccountPage");
+        
         homePage = new HomePage(driver);
         assertTrue(homePage.isInitialized());
+        logger.info("Home page initialized successfully");
 
         loginPage = homePage.onClicklogin();
         assertTrue(loginPage.isInitialized());
+        logger.info("Login page initialized successfully");
 
         myAccountPage = loginPage.onClickSignIn(Config.getInstance().user(), Config.getInstance().password());
         assertTrue(myAccountPage.isInitialized());
+        logger.info("My account page initialized successfully");
+        
+        logger.info("Test test_myAccountPage completed successfully");
     }
 
     @Test(enabled = false)
     public void test_myAccountPage1() {
+        logger.info("Starting test_myAccountPage1 (disabled)");
         driver.get(Config.getInstance().url());
         driver.findElement(By.className("login")).click();
         driver.findElement(By.id("email")).sendKeys(Config.getInstance().user());
         driver.findElement(By.id("passwd")).sendKeys(Config.getInstance().password());
 
         assertTrue(driver.findElement(By.linkText("My account")).isDisplayed());
+        logger.info("Test test_myAccountPage1 completed");
     }
 }

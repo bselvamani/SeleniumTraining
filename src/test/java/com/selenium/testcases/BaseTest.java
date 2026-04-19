@@ -1,17 +1,17 @@
 package com.selenium.testcases;
 
 import com.selenium.driver.Driver;
-import com.selenium.helper.Project;
 import com.selenium.pom.HomePage;
 import com.selenium.pom.LoginPage;
 import com.selenium.pom.MyAccountPage;
 
 import org.testng.annotations.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BaseTest extends Driver {
 
-    protected final Logger logger = Logger.getLogger(BaseTest.class);
+    protected final Logger logger = LoggerFactory.getLogger(BaseTest.class);
 
     protected HomePage homePage;
     protected LoginPage loginPage;

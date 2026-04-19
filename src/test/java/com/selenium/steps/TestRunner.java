@@ -6,7 +6,7 @@ import io.cucumber.testng.CucumberOptions;
 
 @CucumberOptions(features = "src/test/resources/features",
         glue = {"com/selenium/steps"},
-        tags = {"not @Ignore"},
+    tags = "not @Ignore",
         plugin = {"pretty", "html:target/cucumber-html-report", "json:target/cucumber.json"}
 )
 public class TestRunner extends AbstractTestNGCucumberTests {
